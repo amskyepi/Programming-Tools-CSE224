@@ -1,0 +1,51 @@
+#!/bin/bash
+
+################################################################################
+# Phrase Tally Script | Amethyst Skye                                          #
+#                                                                              #
+# Description: This is a bash script which will process a file and then print  #
+# recurring phrases with a count to stdout.                                    #
+#                                                                              #
+################################################################################
+
+##main loop to read input##
+
+while read input
+do
+
+##CLEASNING##
+
+phrase=`echo "$input" | tr 'a-z' 'A-Z'` ##converts to uppercase
+
+##convert all brackets to @, then remove @##
+phrase=`echo "$phrase" | tr '(){}[]"' '@' | tr "'" '@' | sed 's/@//g'`
+
+##convert all tabs, and consecutive/leading spaces to spaces. then convert spaces to "_"##
+phrase=`echo "$phrase" | tr '\t' ' ' | tr -s ' ' | tr -d "\n\r" | sed 's/^ *//' | sed 's/*$//g' | tr ' ' '_'`
+
+##convert separator characters into a single space##
+phrase=`echo "$phrase" | tr '.,;:?!' ' '`
+
+##ASSOCIATIVE ARRAY FOR TALLYING PHRASES##
+declare -A tally
+
+    for phrases in $phrase ##breaks phrase into individual phrases
+    do
+    phrases=`echo "$phrases" | sed 's/^_*//g' | sed 's/_*$//g'` ##remove trailing underscores
+    ##check for empty string##
+    if [[ "$phrases" != "" ]]
+    then
+        count=${tally["$phrases"]} ##read value of phrase
+        count="$((count+1))" ##inc value of phrase
+        tally["$phrases"]="$count" ##store new value into tally
+    else
+        continue ##if string empty, skip it
+    fi
+    done
+done
+
+##iterate over each phrase##
+for key in ${!tally[@]}
+do
+    echo "${tally[$key]} $key" | tr '_' ' ' ##print tally along with phrase
+done
