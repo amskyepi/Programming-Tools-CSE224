@@ -1,0 +1,29 @@
+#!/bin/bash
+#####################################################################################################
+# Fizz Buzz | Amethyst Skye                                                                         #
+# This is a bash script which will print numbers 1-100.                                             #
+# For numbers which are a multiple of 3, instead of printing the number, print Fizz.                #
+# For numbers which are a multiple of 5, instead of printing the number, print Buzz.                #
+# For numbers which are a multiple of both 3 and 5, instead of printing the number, print Fizz Buzz.#
+#####################################################################################################
+
+i=1
+while [[ $i -le 100 ]] ##will loop through ints 1-100
+do
+mod3=$((i%3)) ##var set to check if multiple of 3
+mod5=$((i%5)) ##var set to check if multiple of 5
+
+    if [[ $mod3 -eq 0 && $mod5 -eq 0 ]] ##for i multiple of both 5 and 3
+    then
+        echo "Fizz Buzz"
+    elif [[ $mod5 -eq 0 ]] ##for i multiple of 5
+    then
+        echo "Buzz"
+    elif [[ $mod3 -eq 0 ]] ##for i multiple of 3
+    then
+        echo "Fizz"
+    else
+        echo $i ##print i
+    fi
+i=$((i+1))  ##inc i
+done
