@@ -1,0 +1,99 @@
+#!/bin/bash
+####################################################################################
+# Stick | Amethyst Skye | CSE224                                                   #
+# Description: A program written in bash which allows the user to play a game if   #
+# sticks with the CPU. The user will be prompted to choose how many sticks to play #
+# with. The CPU and user will take turns removing 1-4 sticks from the pile until   #
+# the pile is empty. Whoever removes the last stick from the pile is declared as   #
+# the winner.                                                                      #
+####################################################################################
+
+#Greet User
+echo "Hello, welcome to Sticks!"
+echo " "
+#Ask User "How many sticks?"
+while [[ numSticks -lt 10 ]] #loop until player selects adequate number of sticks
+do
+    echo "How many sticks shall we play with?"
+    read numSticks
+    if [[ $numSticks -ge 10 ]] #number of sticks must be greater than or equal to 10
+        then
+        showSticks $numSticks ##prints sticks with amount in ()
+        break #leave loop
+    fi
+echo "Try again" #when number of sticks entered is less than 10
+done #continue to main game
+
+#Ask who goes first
+echo "Who should go first? (c/u)"
+read whoTurn #User selects who starts game
+while [[ $whoTurn == u || c && numSticks -gt 0 ]]
+do
+    if [[ $whoTurn == u ]] #user turn
+        then
+        i=0 #initialize illegal move counter
+        while [[ i -lt 2 ]] #while illegal moves are less than 2
+        do
+            echo "How many sticks are you taking? (1-4)"
+            read n
+            if [[ n -le 4 && n -ge 1 ]] #user must select between 1 and 4 sticks
+                then
+                numSticks=$(($numSticks-$n)) #user takes sticks from pile
+                showSticks $numSticks #read out remaining number of sticks
+                if [[ numSticks -eq 0 ]] #if user takes last sticks in pile
+                    then
+                    echo "You won!"
+                    exit
+                elif [[ numSticks -gt 0 ]] #if sticks remain in pile
+                    then
+                    whoTurn=c #switch to CPU turn
+                    break
+                fi
+            elif [[ n -ge 5 || n -le 0 ]] #if user makes illegal move
+                then
+                i=$(($i+1)) #inc illegal move counter
+                    if [[ $i -eq 1 ]] #signal warning
+                        then
+                        echo "No cheating allowed!"
+                    elif [[ $i -eq 2 ]] #exit game after 2 attempts of cheating
+                        then
+                        echo "Goodbye, cheater!"
+                        exit
+                    fi
+            else
+                echo "Try again" #if user doesn't select an int
+                break
+            fi
+        done
+    elif [[ $whoTurn == c ]] #CPU turn
+        then
+        takeStick=$(($numSticks%5)) #CPU stick taking algorithm
+            if [[ $takeStick -ne 0 ]]
+                then
+                echo "I took $takeStick sticks"
+                numSticks=$(($numSticks-$takeStick)) #new stick count
+                showSticks $numSticks #show stick pile
+                if [[ numSticks -eq 0 ]] #if CPU wins
+                    then
+                    echo "I won!"
+                    exit
+                else
+                    whoTurn=u #switch to user turn
+                fi
+            else
+                echo "I took 1 stick"
+                numSticks=$(($numSticks-1))
+                showSticks $numSticks
+                if [[ numSticks -eq 0 ]] #if CPU wins
+                    then
+                    echo "I won!"
+                    exit
+                else
+                    whoTurn=u #switch to user turn
+                fi
+            fi
+    else
+        echo "Try again" #if user enters anything besides c/u
+        break
+    fi
+done
